@@ -69,3 +69,5 @@ class Utilites:
 #discount rates
 discount_rate = 0.03
 
+#length of simulation
+n_time_steps=100
