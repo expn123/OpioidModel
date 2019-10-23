@@ -23,3 +23,49 @@ class HealthState(Enum):
     No_MAT_IDU_Norx = 5 #people discontinue on treatment and with IDU but without pills
     No_MAT_IDU_rx = 6 #people discontinue on treatment and with IDU and with pills
 
+#record the costs of each states
+class Costs:
+    def __init__(self):
+        self.cost = 0
+    def get_costs(self,state):
+        if state==0:
+            self.cost=200
+        if state==1:
+            self.cost=100
+        if state==2:
+            self.cost=200
+        if state==3:
+            self.cost=200
+        if state==4:
+            self.cost=200
+        if state==5:
+            self.cost=200
+        if state==6:
+            self.cost=200
+        return self.cost
+
+
+#record the utilities of each states
+class Utilites:
+    def __init__(self):
+        self.utility = 0
+    def get_utility(self,state):
+        if state==0:
+            self.utility=1
+        if state==1:
+            self.utility=1
+        if state==2:
+            self.utility=1
+        if state==3:
+            self.utility=1
+        if state==4:
+            self.utility=1
+        if state==5:
+            self.utility=1
+        if state==6:
+            self.utility=1
+        return self.utility
+
+#discount rates
+discount_rate = 0.03
+
