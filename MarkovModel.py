@@ -6,14 +6,16 @@ import numpy as np
 
 
 class Patient:
-    def __init__(self,id,transition_matrix):
+    def __init__(self,id,transition_matrix,group):
         """
         :param id: identification of each patient
         :param transition_matrix: probability transition matrix of different health states
+        group: 0 means control group (without MAT), 1 means treatment group (with MAT)
         """
         self._id = id
         self._tranProb=transition_matrix
-        self._currentstate = HealthState.Incar_MAT #current health state of the patient
+        self._group = group
+        self._currentstate = HealthState(self._group) #current health state of the patient
         self._outcomes = Outcomes(self._id)
 
     def simulate(self,n_time_steps):
@@ -60,6 +62,35 @@ class Outcomes:
         #get community treatment or not:
         if current_state.value == 2:
             self._commnutiytreatment=1
+
+class Cohort:
+    def __init__(self,id,n,group):
+        """
+        :param id: identification of the cohort
+        :param n:number of patients in the cohort
+        :param group:people in control or treatment group
+        """
+        self._id = id
+        self._n = n #number of patients in the cohort
+        self._group = group
+        self.totalcost=0
+        self.totalutility=0
+
+    def simulate(self,n_time_steps):
+        for i in range(0,self._n):
+            patient = Patient(id=self._id*self._n+i,transition_matrix=Data.trans_matrix_pr,group=self._group)
+            patient.simulate(n_time_steps)
+            self.totalcost+=patient._outcomes._cost
+            self.totalutility+=patient._outcomes._utility
+
+    def get_average_costs(self):
+        average_cost = sum(self.totalcost)/self._n
+        return average_cost
+
+    def get_average_utility(self):
+        average_utility = sum(self.totalutility)/self._n
+        return average_utility
+
 
 
 
