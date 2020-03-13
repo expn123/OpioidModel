@@ -3,6 +3,7 @@ from DataInput import HealthState
 from DataInput import Costs
 from DataInput import Utilites
 import numpy as np
+from gettransmatrix import trans_matrixpr
 
 
 class Patient:
@@ -10,7 +11,7 @@ class Patient:
         """
         :param id: identification of each patient
         :param transition_matrix: probability transition matrix of different health states
-        group: 0 means control group (without MAT), 1 means treatment group (with MAT)
+        group: 0 means treatment group (with MAT), 1 means treatment group (without MAT)
         """
         self._id = id
         self._group = group #treatment or control group
@@ -22,6 +23,8 @@ class Patient:
         self._reincar = 0
         self._resumption=0
         self._release =0
+        self._trelase = 0
+        self._releasetime = 0
 
 
     def simulate(self,n_time_steps):
@@ -30,23 +33,37 @@ class Patient:
         k=0 #step counter;unit:month
 
         while k<n_time_steps:
-            # a 'vector' of probabilities for a patient transfering to other states:
-            trans_prob = self._tran[self._currentstate.value]
+            if self._currentstate.value!=6:
+                # a 'vector' of probabilities for a patient transfering to other states:
+                trans_prob = self._tran[self._currentstate.value]
+            if self._currentstate.value==6:
+                trans_prob = trans_matrixpr(k-self._releasetime+1,self._group)
             # updating the outcomes and health state of the patient:
             next_stateindex = np.random.choice(np.arange(len(trans_prob)),p=trans_prob)
             next_state = HealthState(next_stateindex)
-            self._outcomes.update(self._currentstate,next_state,k)
-            self._currentstate=next_state
 
             if self._currentstate.value==7:
                 self._death=1
+
             if self._currentstate.value==8:
                 self._odcase+=1
-            if self._currentstate.value!=0 and self._currentstate.value!=1:
+
+            if self._currentstate.value==0:
+                self._group=0
+
+            if self._currentstate.value==1:
+                self._group = 1
+
+            if self._currentstate.value==2 or self._currentstate.value==3:
                 self._release =1
-            if (self._currentstate.value==0 or self._currentstate.value==1) and self._release ==1:
-                self._reincar =1
+                self._releasetime = k
+
+            if (self._currentstate.value!=0 and self._currentstate.value!=1) and (next_stateindex==0 or next_stateindex==1):
+                self._reincar +=1
             k=k+1
+
+            self._outcomes.update(self._currentstate,next_state,k)
+            self._currentstate=next_state
 
 class Outcomes:
     def __init__(self,id):
@@ -104,7 +121,6 @@ class Cohort:
             self._deaths.append(patient._death)
             self._cases.append(patient._odcase)
             self._reincar.append(patient._reincar)
-            print(i)
 
     def get_average_costs(self):
         average_cost = sum(self.totalcost)/self._n
@@ -115,7 +131,7 @@ class Cohort:
         return average_utility
 
     def get_mortality(self):
-        mortality = sum(self._deaths)/self._n
+        mortality = sum(self._deaths)
         return mortality
 
     def total_cases(self):
@@ -143,6 +159,10 @@ class Multi_Cohort:
         self._incarb=[]
         self._casea=[]
         self._caseb=[]
+        self._costtreatment = []
+        self._costcontrol = []
+        self.utilitytreatment=[]
+        self.utilitycontrol=[]
 
     def simulate(self, n_time_steps):
         for i in range(0, self._n):
@@ -152,12 +172,16 @@ class Multi_Cohort:
             cohortb.simulate(n_time_steps)
             ICER = (cohorta.totalcost - cohortb.totalcost) / (cohorta.totalutility - cohortb.totalutility)
             self._ICER.append(ICER)
-            self._cost.append(cohorta.totalcost - cohortb.totalcost)
-            self._utlity.append(cohorta.totalutility - cohortb.totalutility)
+            self._costtreatment.append(cohorta.totalcost )
+            self._costcontrol.append(cohortb.totalcost )
+            self.utilitytreatment.append(cohorta.totalutility)
+            self.utilitycontrol.append(cohortb.totalutility)
+
             self._incara.append(cohorta.total_reincar())
             self._incarb.append(cohortb.total_reincar())
             self._casea.append(cohorta.total_cases())
             self._caseb.append(cohortb.total_cases())
+            print(i)
 
 
 
