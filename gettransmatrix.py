@@ -38,4 +38,4 @@ def trans_matrixpr(t,group):
     trans_matrix = [0,pr_reincar,0,0,pr_methadone,pr_abstienence,pr_remain,pr_fatal,pr_nonfatal]
     return trans_matrix
 
-print(trans_matrixpr(2,1))
+print(trans_matrixpr(2,0))

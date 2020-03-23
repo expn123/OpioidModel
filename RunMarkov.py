@@ -38,6 +38,7 @@ for i in range(0,100):
 print(np.average(od_treatment),np.average(od_control),np.average(incar_treatment),np.average(incar_control))
 print(np.average(FATAL__treatment),np.average(FATAL__control))
 '''
+
 '''
 cohorta = Model.Cohort(id=14,n=660,group=0)
 cohorta.simulate(20)
@@ -54,7 +55,7 @@ print(ICER)
 print(cohorta.get_mortality(),cohortb.get_mortality())
 '''
 
-m=Model.Multi_Cohort(1,100)
+m=Model.Multi_Cohort(1,300)
 m.simulate(60)
 print(np.percentile(m._ICER,5),np.percentile(m._ICER,50),np.percentile(m._ICER,95))
 print(np.average(m._costtreatment),np.average(m._costcontrol))
