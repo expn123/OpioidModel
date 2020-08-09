@@ -54,6 +54,22 @@ trans_matrix_pr =[
 ]
 
 '''
+#trans_matrix for sensiivity analysis
+trans_matrix_pr =[
+    [0.848,0,0.152,0,0,0,0,0,0],
+    [0,0.848,0,0.152,0,0,0,0,0],
+    [0.0393939393939394,0,0,0,0.503,0.12394142852739,0.330664632078671,0.003,0],
+    [0,0.043141592920354,0,0,0.116,0.17232548798092,0.665532919098726,0.003,0],
+    [0.021,0.029,0,0,0.9025,0.0129501525940997,0.0345498474059003,0,0],
+    [0,0.0484506188071189,0,0,0,0.64146542082732,0.310083960365561,0,0],
+    [],
+    [0,0,0,0,0,0,0,1,0],
+    [0,0,0,0,0,0,1,0,0]
+
+]
+'''
+
+'''
 trans_matrix_pr =[
     [0.848,0,0.152,0,0,0,0,0,0],
     [0,0.848,0,0.152,0,0,0,0,0],
@@ -85,15 +101,15 @@ class Costs:
         self.cost = 0
     def get_costs(self,state):
         if state==0:
-            self.cost=253.8+112.95*30
+            self.cost=(253.8)+(112.95)*30
         if state==1:
-            self.cost=0+112.95*30
+            self.cost=0+(112.95)*30
         if state==2:
             self.cost=0
         if state==3:
             self.cost=0
         if state==4:
-            self.cost=14.21*30
+            self.cost=(14.21)*30
         if state==5:
             self.cost=0
         if state==6:
@@ -101,19 +117,19 @@ class Costs:
         if state==7:
             self.cost=0
         if state==8:
-            self.cost=1175*(1-0.5)
+            self.cost=1175
         return self.cost
 
 
-#record the utilities of each states
+#record the utilities of each states, updated 08/02/2020
 class Utilites:
     def __init__(self):
         self.utility = 0
     def get_utility(self,state):
         if state==0:
-            self.utility=0.69/12
+            self.utility=(0.65)/12
         if state==1:
-            self.utility=0.640/12
+            self.utility=(0.61)/12
         if state==2:
             self.utility=0.71/12
         if state==3:

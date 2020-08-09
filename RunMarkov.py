@@ -57,7 +57,7 @@ print(cohorta.get_mortality(),cohortb.get_mortality())
 
 m=Model.Multi_Cohort(1,300)
 m.simulate(60)
-print(np.percentile(m._ICER,5),np.percentile(m._ICER,50),np.percentile(m._ICER,95))
+print(np.percentile(m._ICER,5),np.average(m._ICER),np.percentile(m._ICER,95))
 print(np.average(m._costtreatment),np.average(m._costcontrol))
 print(np.average(m.utilitytreatment),np.average(m.utilitycontrol))
 

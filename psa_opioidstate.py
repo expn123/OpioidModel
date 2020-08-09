@@ -20,34 +20,12 @@ fatal_scale = 8.7789706
 fatal_cov = [[0.01806808,-0.1063431],[-0.10634305,0.6951065]]
 fatal_mean = [fatal_shape,fatal_scale]
 
-#caculate lambda and scale (gamma)
-#treatment
-sample_treatment = np.random.multivariate_normal(treatment_mean, treatment_cov)
-lambda_treatment = 1/np.exp(-sample_treatment[0])
-gamma_treatment = np.exp(-sample_treatment[1]*lambda_treatment)
-#control
-sample_control = np.random.multivariate_normal(control_mean, control_cov)
-lambda_control = 1/np.exp(-sample_control[0])
-gamma_control = np.exp(-sample_control[1]*lambda_control)
-#od
-sample_od = np.random.multivariate_normal(od_mean, od_cov)
-lambda_od = 1/np.exp(-sample_od[0])
-gamma_od = np.exp(-sample_od[1]*lambda_od)
-#fatal
-sample_fatalod = np.random.multivariate_normal(fatal_mean, fatal_cov)
-lambda_fatalod = 1/np.exp(-sample_fatalod[0])
-gamma_fatalod = np.exp(-sample_fatalod[1]*lambda_fatalod)
 
-#preparation for weillbul hazard
-lambda_mat = [gamma_treatment, gamma_control]
-scale_mat = [lambda_treatment, lambda_control]
-lambda_nonfatal = gamma_od *3
-scale_nonfatal = lambda_od
-lambda_fatal = gamma_fatalod
-scale_fatal = lambda_fatalod
+abstienence_alpha =2.055
+abstienence_beta =32.195
 
-rate_abstienence = 0.005
-rate_reincarceration = 0.06
+reincar_alpha = 1359.703
+reincar_beta = 0.3651343
 
 
 
@@ -56,8 +34,39 @@ def weibull_rate(t,lamb,scale):
     return rate
 
 
-def trans_matrixpr(t,group):
-    # t: time; group: 1 is treatment, 0 is control
+def trans_matrixpr(id, t,group):
+    np.random.seed(id)
+    # caculate lambda and scale (gamma)
+    # treatment
+    sample_treatment = np.random.multivariate_normal(treatment_mean, treatment_cov)
+    lambda_treatment = 1 / np.exp(-sample_treatment[0])
+    gamma_treatment = np.exp(-sample_treatment[1] * lambda_treatment)
+    # control
+    sample_control = np.random.multivariate_normal(control_mean, control_cov)
+    lambda_control = 1 / np.exp(-sample_control[0])
+    gamma_control = np.exp(-sample_control[1] * lambda_control)
+    # od
+    sample_od = np.random.multivariate_normal(od_mean, od_cov)
+    lambda_od = 1 / np.exp(-sample_od[0])
+    gamma_od = np.exp(-sample_od[1] * lambda_od)
+    # fatal
+    sample_fatalod = np.random.multivariate_normal(fatal_mean, fatal_cov)
+    lambda_fatalod = 1 / np.exp(-sample_fatalod[0])
+    gamma_fatalod = np.exp(-sample_fatalod[1] * lambda_fatalod)
+
+    # preparation for weillbul hazard
+    lambda_mat = [gamma_treatment, gamma_control]
+    scale_mat = [lambda_treatment, lambda_control]
+    lambda_nonfatal = gamma_od * 3
+    scale_nonfatal = lambda_od
+    lambda_fatal = gamma_fatalod
+    scale_fatal = lambda_fatalod
+
+    rate_abstienence = np.random.beta(abstienence_alpha, abstienence_beta) / 12
+    reincar_dur = np.random.gamma(reincar_alpha, reincar_beta, size=1)
+    rate_reincarceration = 1 / (reincar_dur[0] / 30)
+
+    # t: time; group: 0 is treatment, 1 is control
     rate_methadone = weibull_rate(t,lambda_mat[group],scale_mat[group])
     rate_nonfatal = weibull_rate(t,lambda_nonfatal,scale_nonfatal)
     rate_fatal = weibull_rate(t,lambda_fatal,scale_fatal)
@@ -75,4 +84,4 @@ def trans_matrixpr(t,group):
     trans_matrix = [0,pr_reincar,0,0,pr_methadone,pr_abstienence,pr_remain,pr_fatal,pr_nonfatal]
     return trans_matrix
 
-print(trans_matrixpr(2,0))
+print(trans_matrixpr(5,1,1))
