@@ -121,7 +121,7 @@ class Costs:
         return self.cost
 
 
-#record the utilities of each states, updated 08/02/2020
+#record the utilities of each states, updated 08/24/2020
 class Utilites:
     def __init__(self):
         self.utility = 0
@@ -135,9 +135,9 @@ class Utilites:
         if state==3:
             self.utility=0.67/12
         if state==4:
-            self.utility=0.71/12
-        if state==5:
             self.utility=0.8/12
+        if state==5:
+            self.utility=0.71/12
         if state==6:
             self.utility=0.67/12
         if state==7:

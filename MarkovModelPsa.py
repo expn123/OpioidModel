@@ -181,6 +181,8 @@ class Multi_Cohort:
                 dom=1
             self.dom.append(dom)
             self._ICER.append(ICER)
+            self._cost.append(cohorta.totalcost - cohortb.totalcost)
+            self._utlity.append(cohorta.totalutility - cohortb.totalutility)
             self._costtreatment.append(cohorta.totalcost )
             self._costcontrol.append(cohortb.totalcost )
             self.utilitytreatment.append(cohorta.totalutility)
